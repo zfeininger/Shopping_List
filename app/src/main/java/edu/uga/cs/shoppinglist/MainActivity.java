@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     public static String TAG = "ShoppingList";
     private FirebaseAuth mAuth;
     private Button signInButton;
+    private Button regButton;
     private EditText editTextEmail;
     private EditText editTextPassword;
 
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         signInButton = findViewById(R.id.button2);
+        regButton =  findViewById(R.id.buttonRegister);
+
         editTextEmail = findViewById(R.id.editTextTextEmailAddress);
         editTextPassword = findViewById(R.id.editTextTextPassword);
 
