@@ -80,6 +80,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        regButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = editTextEmail.getText().toString();
+                String password = editTextPassword.getText().toString();
+                if (email.equals("") || email.equals(null)) {
+                    email = "1";
+                }
+                if (password.equals("") || password.equals(null)) {
+                    password = "1";
+                    email = "1";
+                }
+
+                mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "createdUserWithEmail:success");
+                                    Toast.makeText(MainActivity.this, "Authentication success.",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.d(TAG, "createdUserWithEmail:failure");
+                                    Toast.makeText(MainActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        });
+
     }
 }
 
