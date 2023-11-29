@@ -12,6 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 public class ShoppingListFragment extends Fragment {
     private EditText editTextItem;
@@ -45,8 +49,16 @@ public class ShoppingListFragment extends Fragment {
                 if (editTextItem.getText().toString().equals("") || editTextItem.getText().toString().equals(null)) {
                     return;
                 } else {
-                    Toast.makeText(getContext(), editTextItem.getText().toString() + " has been added to the Shopping List!", Toast.LENGTH_SHORT).show();
-
+                    Item item = new Item(editTextItem.getText().toString());
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("shoppingList");
+                    myRef.push().setValue(item)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Toast.makeText(getContext(), editTextItem.getText().toString() + " has been added to the Shopping List!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
             }
         });
