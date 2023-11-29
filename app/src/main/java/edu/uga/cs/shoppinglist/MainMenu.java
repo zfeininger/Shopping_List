@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainMenu extends AppCompatActivity {
@@ -27,6 +28,9 @@ public class MainMenu extends AppCompatActivity {
     private Toolbar toolbar;
     private NavigationView navigationView;
     private ActionBarDrawerToggle drawerToggle;
+    private FirebaseUser user;
+    private FirebaseAuth mAuth;
+    private TextView textview;
 
 
     @Override
@@ -34,11 +38,11 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
-        Intent intent = getIntent();
-        FirebaseUser user = intent.getParcelableExtra("user");
-        String email = user.getEmail();
-        TextView textview = findViewById(R.id.textView);
-        textview.setText("Welcome " + email);
+        mAuth = FirebaseAuth.getInstance();
+        Intent intent = getIntent(); //unnecessary, can be deleted in later time
+        user = intent.getParcelableExtra("user"); //unnecessary
+        textview = findViewById(R.id.textView3);
+        textview.setText("USER: " + user.getEmail().toString());
 
 
 
@@ -80,9 +84,9 @@ public class MainMenu extends AppCompatActivity {
         } else if (itemId == R.id.PurchaseList) {
            fragment = new PurchasedListFragment();
          } else if (itemId == R.id.Logout) {
+            mAuth.signOut();
             finish();
-
-            //PUT LOGOUT LOGIC HERE
+            return;
         } else {
             return;
         }

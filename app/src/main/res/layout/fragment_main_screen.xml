@@ -6,11 +6,12 @@
     tools:context=".MainScreen">
 
     <!-- TODO: Update blank fragment layout -->
-   <TextView
-    android:id="@+id/textView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="tEST"
-    />
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Welcome, select your option from the above choices!" />
 
 </FrameLayout>

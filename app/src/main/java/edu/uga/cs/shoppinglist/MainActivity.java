@@ -99,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "createdUserWithEmail:success");
-                                    Toast.makeText(MainActivity.this, "Authentication success.",
+                                    Toast.makeText(MainActivity.this, "YOU HAVE BEEN SUCCESSFULLY REGISTERED!",
                                             Toast.LENGTH_SHORT).show();
                                 } else {
                                     Log.d(TAG, "createdUserWithEmail:failure");
-                                    Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.makeText(MainActivity.this, "YOU HAVE FAILED TO REGISTER, ENTER A VALID EMAIL/PASSWORD",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
