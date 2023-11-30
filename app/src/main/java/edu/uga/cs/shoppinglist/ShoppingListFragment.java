@@ -74,6 +74,7 @@ public class ShoppingListFragment extends Fragment {
         database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
 

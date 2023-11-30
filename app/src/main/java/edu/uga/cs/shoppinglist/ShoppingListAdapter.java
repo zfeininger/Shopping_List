@@ -54,8 +54,6 @@ ArrayList<Item> list;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
-
             firstName = itemView.findViewById(R.id.tvfirstName);
         }
     }
