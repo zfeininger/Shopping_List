@@ -2,7 +2,10 @@ package edu.uga.cs.shoppinglist;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,13 +16,26 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 
 public class ShoppingListFragment extends Fragment {
     private EditText editTextItem;
     private Button button;
+
+    RecyclerView recyclerView;
+
+    DatabaseReference database;
+
+    ShoppingListAdapter shoppingListAdapter;
+
+    ArrayList<Item> list;
 
 
     public ShoppingListFragment() {
@@ -34,14 +50,47 @@ public class ShoppingListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_shopping_list, container, false);
+        recyclerView = v.findViewById(R.id.shoppingListRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
         editTextItem = v.findViewById(R.id.editText);
         button = v.findViewById(R.id.button3);
+
+        database = FirebaseDatabase.getInstance().getReference("shoppingList");
+        recyclerView.setHasFixedSize(true);
+
+        list = new ArrayList<>();
+        shoppingListAdapter = new ShoppingListAdapter(getContext(),list);
+        recyclerView.setAdapter(shoppingListAdapter);
+
+        database.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+
+                    Item item = dataSnapshot.getValue(Item.class);
+                    list.add(item);
+
+
+                }
+                shoppingListAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,3 +115,6 @@ public class ShoppingListFragment extends Fragment {
         return v;
     }
 }
+
+
+
