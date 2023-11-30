@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +56,6 @@ ArrayList<Item> list;
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.d("DELETE", item.getItemName());
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("shoppingList");
                 Query query = databaseReference.orderByChild("itemName").equalTo(item.getItemName());
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -80,6 +80,38 @@ ArrayList<Item> list;
                 });
             }
         });
+
+        holder.updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Log.d("UPDATE", holder.editText.getText().toString());
+                if (holder.editText.getText().toString().equals("") || holder.editText.getText().toString().equals(null)) {
+                    return;
+                }
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("shoppingList");
+                Query query = databaseReference.orderByChild("itemName").equalTo(item.getItemName());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            snapshot.getRef().child("itemName").setValue(holder.editText.getText().toString())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.d("UPDATE", "it works");
+                                            Toast.makeText(view.getContext(), "Item replaced: " + item.getItemName(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -91,11 +123,15 @@ ArrayList<Item> list;
 
         TextView firstName;
         Button deleteButton;
+        Button updateButton;
+        EditText editText;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             firstName = itemView.findViewById(R.id.tvfirstName);
             deleteButton = itemView.findViewById(R.id.button4);
+            updateButton = itemView.findViewById(R.id.button5);
+            editText = itemView.findViewById(R.id.editText);
         }
     }
 
