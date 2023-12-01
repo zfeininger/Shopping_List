@@ -4,10 +4,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,10 +22,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
+import android.widget.Toast;
 
 public class BasketListFragment extends Fragment {
 
     private Spinner spinner;
+    private Button button;
+    private EditText editText;
 
     public BasketListFragment() {
         // Required empty public constructor
@@ -47,9 +55,47 @@ public class BasketListFragment extends Fragment {
 
 
         spinner = v.findViewById(R.id.spinner);
+        button = v.findViewById(R.id.button_basket);
+        editText = v.findViewById(R.id.editText);
 
         // Load data from Firebase to Spinner
         loadDataFromFirebase();
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Log.d("TEST", "clicked " + spinner.getSelectedItem().toString() + " " + editText.getText().toString());
+                if (editText.getText().toString().equals("") || editText.getText().toString().equals(null)) {
+                    Toast.makeText(getContext(), "ENTER A PRICE VALUE", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                BasketItem basketItem = new BasketItem(spinner.getSelectedItem().toString(), editText.getText().toString());
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("shoppingBasket");
+                myRef.push().setValue(basketItem)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(getContext(), spinner.getSelectedItem().toString() + " has been added to shopping Basket", Toast.LENGTH_SHORT).show();
+                                DatabaseReference shoppingListRef = database.getReference("shoppingList");
+                                shoppingListRef.orderByChild("itemName").equalTo(spinner.getSelectedItem().toString())
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                    snapshot.getRef().removeValue();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
+                            }
+                        });
+            }
+        });
 
 
         return v;
