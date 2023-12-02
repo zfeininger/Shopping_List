@@ -3,6 +3,7 @@ package edu.uga.cs.shoppinglist;
 public class Item {
     private String itemName;
 
+
     public Item() {
 
     }
@@ -10,6 +11,7 @@ public class Item {
     public Item(String itemName) {
         this.itemName = itemName;
     }
+
 
     public String getItemName() {
         return itemName;

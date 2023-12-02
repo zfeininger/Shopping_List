@@ -10,6 +10,8 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +32,14 @@ public class BasketListFragment extends Fragment {
     private Spinner spinner;
     private Button button;
     private EditText editText;
+    RecyclerView recyclerView;
+
+    DatabaseReference database;
+
+    BasketListAdapter BasketListAdapter;
+
+    ArrayList<BasketItem> list;
+
 
     public BasketListFragment() {
         // Required empty public constructor
@@ -52,12 +62,44 @@ public class BasketListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_basket, container, false);
 
         // Initialize Spinner
+        recyclerView = v.findViewById(R.id.basketListRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+
+        editText = v.findViewById(R.id.editText);
+        button = v.findViewById(R.id.button_basket);
+
+        database = FirebaseDatabase.getInstance().getReference("shoppingBasket");
+        recyclerView.setHasFixedSize(true);
+
+        list = new ArrayList<>();
+        BasketListAdapter = new BasketListAdapter(getContext(),list);
+        recyclerView.setAdapter(BasketListAdapter);
 
         spinner = v.findViewById(R.id.spinner);
         button = v.findViewById(R.id.button_basket);
         editText = v.findViewById(R.id.editText);
+        database.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
 
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+
+                    BasketItem item = dataSnapshot.getValue(BasketItem.class);
+                    list.add(item);
+
+
+                }
+                BasketListAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         // Load data from Firebase to Spinner
         loadDataFromFirebase();
 
@@ -135,3 +177,5 @@ public class BasketListFragment extends Fragment {
         });
     }
 }
+
+

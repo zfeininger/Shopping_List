@@ -77,7 +77,7 @@
             app:layout_constraintVertical_bias="1.0">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/shoppingListRecyclerView"
+                android:id="@+id/basketListRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </ScrollView>
