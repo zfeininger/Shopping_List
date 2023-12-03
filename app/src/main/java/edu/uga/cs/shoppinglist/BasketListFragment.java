@@ -166,6 +166,7 @@ public class BasketListFragment extends Fragment {
                                     totalPrice = totalPrice + Double.parseDouble(basketItem.getItemPrice().toString());
                                 }
                             }
+                            totalPrice = totalPrice + (totalPrice * 0.04);
                             String timestamp = String.valueOf(System.currentTimeMillis());
                             PreviousListItem previousListItem = new PreviousListItem(timestamp, user.getEmail().toString(), String.valueOf(totalPrice), shoppingBasketItems);
 //                            Log.d("TOTAL PRICE", String.valueOf(totalPrice));

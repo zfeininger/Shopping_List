@@ -59,17 +59,21 @@ public class BasketListAdapter extends RecyclerView.Adapter<BasketListAdapter.My
             @Override
             public void onClick(View view) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("shoppingBasket");
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("shoppingList");
                 Query query = databaseReference.orderByChild("itemName").equalTo(item.getItemName());
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            BasketItem basketItem = snapshot.getValue(BasketItem.class);
                             snapshot.getRef().removeValue()
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
                                             Log.d("DELETE", "Item deleted: " + item.getItemName());
                                             Toast.makeText(view.getContext(), "Item deleted: " + item.getItemName(), Toast.LENGTH_SHORT).show();
+                                            Item item = new Item(basketItem.getItemName().toString());
+                                            databaseReference1.push().setValue(item);
                                         }
                                     });
                         }
