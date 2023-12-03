@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +41,7 @@ public class BasketListFragment extends Fragment {
     BasketListAdapter BasketListAdapter;
 
     ArrayList<BasketItem> list;
+    private Button purchaseButton;
 
 
     public BasketListFragment() {
@@ -68,6 +71,7 @@ public class BasketListFragment extends Fragment {
 
         editText = v.findViewById(R.id.editText);
         button = v.findViewById(R.id.button_basket);
+        purchaseButton = v.findViewById(R.id.button6);
 
         database = FirebaseDatabase.getInstance().getReference("shoppingBasket");
         recyclerView.setHasFixedSize(true);
@@ -138,6 +142,53 @@ public class BasketListFragment extends Fragment {
                         });
             }
         });
+
+        purchaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                FirebaseUser user = mAuth.getCurrentUser();
+//                Log.d("TEST", user.getEmail().toString());
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference shoppingBasketRef = database.getReference("shoppingBasket");
+                DatabaseReference previousListRef = database.getReference("previousList");
+                shoppingBasketRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        double totalPrice = 0;
+                        if (dataSnapshot.exists()) {
+                            List<BasketItem> shoppingBasketItems = new ArrayList<>();
+                            for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                                BasketItem basketItem = itemSnapshot.getValue(BasketItem.class);
+                                if (basketItem != null) {
+                                    shoppingBasketItems.add(basketItem);
+                                    itemSnapshot.getRef().removeValue();
+                                    totalPrice = totalPrice + Double.parseDouble(basketItem.getItemPrice().toString());
+                                }
+                            }
+                            String timestamp = String.valueOf(System.currentTimeMillis());
+                            PreviousListItem previousListItem = new PreviousListItem(timestamp, user.getEmail().toString(), String.valueOf(totalPrice), shoppingBasketItems);
+//                            Log.d("TOTAL PRICE", String.valueOf(totalPrice));
+                            previousListRef.push().setValue(previousListItem)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(getContext(), "Items purchased and moved to previousList", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
+
 
 
         return v;

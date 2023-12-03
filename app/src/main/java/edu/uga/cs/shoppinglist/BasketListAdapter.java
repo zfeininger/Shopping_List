@@ -58,7 +58,7 @@ public class BasketListAdapter extends RecyclerView.Adapter<BasketListAdapter.My
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("shoppingList");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("shoppingBasket");
                 Query query = databaseReference.orderByChild("itemName").equalTo(item.getItemName());
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -70,38 +70,6 @@ public class BasketListAdapter extends RecyclerView.Adapter<BasketListAdapter.My
                                         public void onSuccess(Void unused) {
                                             Log.d("DELETE", "Item deleted: " + item.getItemName());
                                             Toast.makeText(view.getContext(), "Item deleted: " + item.getItemName(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-            }
-        });
-
-        holder.updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Log.d("UPDATE", holder.editText.getText().toString());
-                if (holder.editText.getText().toString().equals("") || holder.editText.getText().toString().equals(null)) {
-                    return;
-                }
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("shoppingBasket");
-                Query query = databaseReference.orderByChild("itemName").equalTo(item.getItemName());
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            snapshot.getRef().child("itemName").setValue(holder.editText.getText().toString())
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            Log.d("UPDATE", "it works");
-                                            Toast.makeText(view.getContext(), "Item replaced: " + item.getItemName(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         }
@@ -131,8 +99,6 @@ public class BasketListAdapter extends RecyclerView.Adapter<BasketListAdapter.My
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             firstName = itemView.findViewById(R.id.tvfirstNameBasket);
-            updateButton = itemView.findViewById(R.id.buttonBasket5);
-            editText = itemView.findViewById(R.id.editText);
             deleteButton = itemView.findViewById(R.id.buttonBasket4);
             price = itemView.findViewById(R.id.PriceText);
 
