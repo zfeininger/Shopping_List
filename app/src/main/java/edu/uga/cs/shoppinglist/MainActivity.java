@@ -101,6 +101,23 @@ public class MainActivity extends AppCompatActivity {
                                     Log.d(TAG, "createdUserWithEmail:success");
                                     Toast.makeText(MainActivity.this, "YOU HAVE BEEN SUCCESSFULLY REGISTERED!",
                                             Toast.LENGTH_SHORT).show();
+                                    DatabaseReference userCountRef = FirebaseDatabase.getInstance().getReference("message");
+                                    userCountRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            Integer currentValue = dataSnapshot.getValue(Integer.class);
+                                            if (currentValue != null) {
+                                                int newValue = currentValue + 1;
+                                                userCountRef.setValue(newValue);
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
                                 } else {
                                     Log.d(TAG, "createdUserWithEmail:failure");
                                     Toast.makeText(MainActivity.this, "YOU HAVE FAILED TO REGISTER, ENTER A VALID EMAIL/PASSWORD",
@@ -113,19 +130,3 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
-
-//    FirebaseDatabase database = FirebaseDatabase.getInstance();
-//    DatabaseReference myRef = database.getReference("message");
-//                            myRef.addValueEventListener(new ValueEventListener() {
-//@Override
-//public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//        String message = dataSnapshot.getValue(String.class);
-//        //textView.setText(message);
-//        Log.d(TAG, "Succeed to read value.");
-//        }
-//
-//@Override
-//public void onCancelled(@NonNull DatabaseError error) {
-//        Log.d(TAG, "Failed to read value.", error.toException());
-//        }
-//        });
