@@ -64,6 +64,7 @@ public class PurchasedItemsAdapter extends RecyclerView.Adapter<PurchasedItemsAd
                                                 Toast.makeText(view.getContext(), "Item deleted: " + basketItem.getItemName(), Toast.LENGTH_SHORT).show();
                                                 Item item = new Item(basketItem.getItemName().toString());
                                                 databaseReference1.push().setValue(item);
+
                                             }
                                         });
                                 return;
@@ -112,6 +113,26 @@ public class PurchasedItemsAdapter extends RecyclerView.Adapter<PurchasedItemsAd
                                                                 Toast.makeText(view.getContext(), "Item deleted: " + basketItem.getItemName(), Toast.LENGTH_SHORT).show();
                                                                 Item item = new Item(basketItem.getItemName().toString());
                                                                 databaseReference1.push().setValue(item);
+                                                                DatabaseReference specificNodeRef = FirebaseDatabase.getInstance().getReference("previousList").child(key);
+                                                                specificNodeRef.child("totalPrice").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                        if (dataSnapshot.exists()) {
+                                                                            String totalPrice = dataSnapshot.getValue(String.class);
+                                                                            double totalPriceHolder = (Double.parseDouble(totalPrice) / 1.04) - Double.parseDouble(basketItem.getItemPrice().toString());
+                                                                            totalPrice = String.valueOf((totalPriceHolder * 0.04) + totalPriceHolder);
+                                                                            specificNodeRef.child("totalPrice").setValue(totalPrice);
+                                                                            Log.d("Total Price", totalPrice);
+                                                                        } else {
+                                                                            Log.d("Total Price", "does not exits");
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                                    }
+                                                                });
                                                             }
                                                         })
                                                         .addOnFailureListener(new OnFailureListener() {
@@ -198,6 +219,27 @@ public class PurchasedItemsAdapter extends RecyclerView.Adapter<PurchasedItemsAd
                                                             public void onSuccess(Void unused) {
                                                                 Log.d("DELETE", "Item deleted: " + basketItem.getItemName());
                                                                 Toast.makeText(view.getContext(), "Item Price replaced: " + basketItem.getItemName(), Toast.LENGTH_SHORT).show();
+                                                                DatabaseReference specificNodeRef = FirebaseDatabase.getInstance().getReference("previousList").child(key);
+                                                                specificNodeRef.child("totalPrice").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                        if (dataSnapshot.exists()) {
+                                                                            String totalPrice = dataSnapshot.getValue(String.class);
+                                                                            double totalPriceHolder = (Double.parseDouble(totalPrice) / 1.04) - Double.parseDouble(basketItem.getItemPrice().toString());
+                                                                            totalPriceHolder = totalPriceHolder + Double.parseDouble(holder.editText.getText().toString());
+                                                                            totalPrice = String.valueOf((totalPriceHolder * 0.04) + totalPriceHolder);
+                                                                            specificNodeRef.child("totalPrice").setValue(totalPrice);
+                                                                            Log.d("Total Price", totalPrice);
+                                                                        } else {
+                                                                            Log.d("Total Price", "does not exits");
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                                    }
+                                                                });
                                                             }
                                                         })
                                                         .addOnFailureListener(new OnFailureListener() {
